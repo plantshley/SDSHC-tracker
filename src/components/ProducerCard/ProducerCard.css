@@ -1,0 +1,71 @@
+.producer-card {
+  background: var(--card-bg);
+  border: var(--card-border);
+  border-radius: var(--card-radius);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+  animation: cardFadeIn 0.4s ease both;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.producer-card:hover {
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-2px);
+}
+
+.producer-card-farm {
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.3;
+}
+
+.producer-card-name {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.producer-card-contracts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.producer-card-tag {
+  font-family: var(--font-body);
+  font-size: 10px;
+  padding: 2px 8px;
+  background: var(--accent-bg);
+  color: var(--accent-dark);
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.producer-card-segments {
+  display: flex;
+  gap: 4px;
+}
+
+.producer-card-seg {
+  font-family: var(--font-body);
+  font-size: 10px;
+  padding: 2px 8px;
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  border-radius: 6px;
+}
+
+.producer-card-funding {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-top: 4px;
+}

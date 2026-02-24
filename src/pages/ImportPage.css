@@ -1,0 +1,126 @@
+.import-page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.import-title {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+
+.import-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.import-description {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.import-warning {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: #e67e22;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.import-btn {
+  display: inline-block;
+  padding: 10px 24px;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  background: var(--accent);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  text-align: center;
+}
+
+.import-btn:hover {
+  opacity: 0.9;
+}
+
+.import-btn-secondary {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+.import-btn-secondary:hover {
+  background: var(--accent);
+  color: white;
+}
+
+.import-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.import-error {
+  padding: 16px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: #dc2626;
+}
+
+[data-mode="dark"] .import-error {
+  background: #2d1b1b;
+  border-color: #5c2020;
+}
+
+.import-success {
+  padding: 16px;
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-light);
+  border-radius: 10px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--accent-dark);
+}
+
+.import-success ul {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.import-success li {
+  margin: 4px 0;
+}
+
+.import-nav-btn {
+  margin-top: 12px;
+  padding: 8px 20px;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.import-nav-btn:hover {
+  opacity: 0.9;
+}

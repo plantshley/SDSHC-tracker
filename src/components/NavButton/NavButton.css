@@ -1,0 +1,55 @@
+.nav-tab-btn {
+  position: relative;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-heading);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.nav-tab-btn-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border-radius: 12px;
+  background: var(--accent-bg);
+  color: var(--accent-dark);
+  overflow: hidden;
+  transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+.nav-tab-btn:hover .nav-tab-btn-inner {
+  background: var(--accent-light);
+  box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.15);
+}
+
+.nav-tab-btn.active .nav-tab-btn-inner {
+  background: var(--accent);
+  color: white;
+  box-shadow: 0 0 16px rgba(var(--accent-rgb), 0.25);
+}
+
+.nav-tab-btn-shine {
+  position: absolute;
+  left: -4rem;
+  top: -50%;
+  height: 200%;
+  width: 3rem;
+  background: rgba(255, 255, 255, 0.15);
+  transform: rotate(30deg);
+  transition: left 0.7s;
+}
+
+.nav-tab-btn:hover .nav-tab-btn-shine {
+  left: calc(100% + 1rem);
+}
+
+.nav-tab-btn.active .nav-tab-btn-shine {
+  background: rgba(255, 255, 255, 0.3);
+}

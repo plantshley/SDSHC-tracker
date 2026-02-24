@@ -70,9 +70,12 @@ practices:    ++id, bmpId, practiceType, practiceCode, status,
 bills:        ++id, practiceId, description, quantity, units,
               paymentNumber, paidDate, serviceBeginDate, serviceEndDate, notes
 funds:        ++id, billId, fundName, amount, isAdvance
-photos:       ++id, bmpId, type (before/after), dataUrl, caption, timestamp
-milestones:   ++id, bmpId, dueDate, actualAmount, unit
-npsReductions: ++id, bmpId, pollutant, cellQuantity, watershedQuantity, unit
+photos:       ++id, bmpId, dataUrl, notes, date
+milestones:   ++id, bmpId, actualAmount, unit
+npsReductions: ++id, practiceId, pollutant, quantity, unit
+              (per-practice: individual practice reductions)
+npsReductionsCombined: ++id, contractId, pollutant, quantity, unit
+              (contract-level: combined-effect reductions for all practices together)
 imports:      ++id, source, importDate, recordCount
 ```
 
@@ -85,9 +88,11 @@ Project
              ├─ Practice (e.g., "Cover Crop - 340")
              │   └─ Practice Bill (e.g., "Seed purchase")
              │       └─ Funds Used (e.g., "$2,000 from 319")
-             ├─ Photos (before/after, up to 6)
-             ├─ Milestones (acres completed by due date)
-             └─ NPS Reductions (N, P, Sediment reductions)
+             ├─ Photos (uploads with optional notes + date)
+             └─ Milestones (actual amounts completed, by BMP type)
+     └─ Contract
+         ├─ NPS Reductions per Practice (N, P, S quantity for each individual practice)
+         └─ NPS Reductions Combined (contract-level combined-effect N, P, S reductions)
 ```
 
 ---
@@ -144,14 +149,14 @@ Deduplication: Group rows by PersonID to create one producer record, then split 
 
 ```
 /                    → Dashboard (KPIs, charts, recent activity)
-/producers           → Producer list (searchable DataTable)
-/producers/:id       → Producer detail (info + contracts list)
+/producers           → Producer gallery (searchable cards grid)
+/producers/:id       → Producer detail page (full profile + all contracts/segments)
 /contracts/:id       → Contract detail (info + BMPs list)
 /bmps/:id            → BMP detail (info + practices + photos + map pin)
 /practices/:id       → Practice detail (info + bills + funds)
 /entry               → New entry wizard (multi-step form)
 /entry/pdf           → PDF upload & auto-fill flow
-/map                 → Full-page map of all BMP locations
+/map                 → Full-page map of all completed projects/contracts (click point → see producer/farm details)
 /vouchers            → Voucher list (draft + finalized)
 /vouchers/:id        → Voucher detail (add bills, summary, finalize)
 /grts                → GRTS report list
@@ -185,19 +190,62 @@ Top nav bar (matching master dashboard style) with tabs: **Dashboard | Producers
 - `formatters.js`, `exportUtils.js` — utilities
 
 ### New Components to Build
+- `ProducerCard` — card showing farm name, producer name, contract IDs, project years
 - `FormField` — reusable labeled input with validation
 - `FormSection` — collapsible form section
 - `Breadcrumb` — hierarchy navigation (Project > Producer > Contract > BMP)
 - `StatusBadge` — color-coded status indicator
-- `PhotoUpload` — drag-drop with client-side image compression
-- `PhotoGallery` — grid of before/after photos with lightbox
-- `MapPicker` — Leaflet map for clicking to set lat/long
+- `PhotoUpload` — drag-drop with client-side image compression + optional notes/date
+- `PhotoGallery` — grid of photos with lightbox
+- `MapPicker` — Leaflet map with T/R/S search, click to pin, auto-fills lat/long
+- `MapOverview` — full-page map with clickable markers and popup info cards
 - `PDFUploader` — upload + parse + review flow
 - `ConfirmDialog` — modal for destructive actions
 - `EntryWizard` — multi-step form with progress indicator
 
 ### Theme
 Accent color: **teal (#4CA5C2)** — matching the cost-share dashboard since this is the same data domain.
+
+---
+
+## Producers Tab
+
+The Producers page displays a **card grid** (not a table) of all producers, each card showing:
+- Farm name (prominent)
+- Producer name
+- Contract ID(s) they've participated in
+- Project year(s) / segment(s)
+
+Above the cards: **search bar** (searches by name, contract number, farm name) and a **project segment filter/toggle** (Seg 2 / Seg 3 / All).
+
+Clicking a card navigates to `/producers/:id` — a **dedicated full-page producer profile** showing:
+- Producer info header (name, farm, contact details — editable)
+- Tabs or sections for each project segment/contract they've participated in
+- Under each contract: BMPs, practices, bills, funds, photos, milestones, NPS reductions
+- All fields editable inline
+- Timeline/history view of their participation across segments
+
+---
+
+## Map Tab & Map Picker
+
+Two distinct map uses:
+
+### 1. Map Tab (`/map`) — Overview Map
+A full-page Leaflet map showing **all completed projects/contracts** as pins/markers. Features:
+- Color-coded markers by BMP type or project segment
+- Click a point → **popup card** showing: Producer name, Farm name, BMPs implemented, total $$ paid, total acres, practice details
+- Click through from popup to the producer's detail page
+- Filter controls: by project segment, BMP type, year range
+- Cluster markers when zoomed out
+
+### 2. Map Picker (within BMP entry forms)
+When entering/editing a BMP, an embedded map component for setting location:
+- **Section/Range/Township search**: User enters T/R/S values → map zooms to that area
+- User clicks to **pin a point** on the map
+- Auto-fills: Latitude, Longitude, Stream Area (EntityID)
+- Can adjust pin by clicking elsewhere
+- Save stores lat/long with the BMP record
 
 ---
 
@@ -289,8 +337,8 @@ grtsReports:  ++id, projectId, fiscalYear, reportDateFrom, reportDateTo,
 - Dexie database schema and CRUD hooks (including voucher + GRTS tables)
 - Copy and adapt shared components from master dashboard
 - Excel historical import (parse 438 rows → normalized entities)
-- ProducerListPage with searchable DataTable
-- ProducerDetailPage with contract list
+- ProducerListPage with searchable card grid (ProducerCard) + segment filter
+- ProducerDetailPage (full profile with all contracts/segments, inline editing)
 - PasswordGate with role selection
 - JSON export/import for backup
 

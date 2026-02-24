@@ -1,0 +1,191 @@
+.producer-detail-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.back-btn {
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  align-self: flex-start;
+}
+
+.back-btn:hover {
+  text-decoration: underline;
+}
+
+.producer-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.producer-detail-farm {
+  font-family: var(--font-heading);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.producer-detail-name {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.producer-detail-stats {
+  display: flex;
+  gap: 24px;
+}
+
+.producer-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.producer-stat-value {
+  font-family: var(--font-body);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.producer-stat-label {
+  font-family: var(--font-heading);
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.producer-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.info-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.info-field label {
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-field span {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.section-heading {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-top: 8px;
+}
+
+.subsection-heading {
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 12px 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.contract-meta {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.bmp-item {
+  padding: 12px;
+  background: var(--bg-primary);
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.bmp-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.bmp-type {
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-dark);
+}
+
+.bmp-date {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.bmp-practices {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.practice-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  font-family: var(--font-body);
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--bg-card);
+}
+
+.practice-type {
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.practice-acres {
+  color: var(--accent);
+  font-weight: 600;
+  min-width: 60px;
+  text-align: right;
+}
+
+.practice-status {
+  color: var(--text-muted);
+  font-size: 11px;
+  min-width: 70px;
+  text-align: right;
+}
