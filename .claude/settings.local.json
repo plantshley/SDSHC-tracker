@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "Bash(unzip:*)",
+      "WebFetch(domain:apps.sd.gov)"
+    ]
+  }
+}
