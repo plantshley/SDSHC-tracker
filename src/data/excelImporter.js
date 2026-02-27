@@ -17,6 +17,49 @@ export async function importFromExcel(file) {
 
   if (rows.length === 0) throw new Error('No data found in Cost-share History sheet')
 
+  // Load contact info from Master Database (expanded) sheet
+  const contactMap = new Map() // PersonID -> contact info
+  const masterSheetName = workbook.SheetNames.find((n) =>
+    n.toLowerCase().includes('master database') && n.toLowerCase().includes('expanded')
+  ) || workbook.SheetNames.find((n) => n.toLowerCase().includes('master database'))
+
+  // Also track relationships per PersonID to find Segment Contacts without cost-share
+  const relationshipMap = new Map() // PersonID -> Set of relationship strings
+
+  if (masterSheetName) {
+    const masterSheet = workbook.Sheets[masterSheetName]
+    const masterRows = XLSX.utils.sheet_to_json(masterSheet, { defval: '' })
+    for (const mRow of masterRows) {
+      const pid = String(mRow['PersonID'] || '').trim()
+      if (!pid) continue
+
+      const contact = {
+        firstName: String(mRow['First Name'] || '').trim(),
+        lastName: String(mRow['Last Name'] || '').trim(),
+        email: String(mRow['Email'] || '').trim(),
+        phone: String(mRow['Phone'] || '').trim(),
+        address: String(mRow['Street'] || '').trim(),
+        address2: String(mRow['Street II'] || '').trim(),
+        city: String(mRow['City'] || '').trim(),
+        state: String(mRow['State'] || '').trim(),
+        zip: String(mRow['Zipcode'] || '').trim(),
+        recordUrl: String(mRow['RecordURL'] || '').trim(),
+      }
+
+      // Keep the first (or most complete) contact entry per PersonID
+      if (!contactMap.has(pid)) {
+        contactMap.set(pid, contact)
+      }
+
+      // Collect all relationships for this person
+      const rel = String(mRow['Relationship'] || '').trim()
+      if (rel) {
+        if (!relationshipMap.has(pid)) relationshipMap.set(pid, new Set())
+        relationshipMap.get(pid).add(rel)
+      }
+    }
+  }
+
   // Group rows by PersonID to deduplicate producers
   const producerMap = new Map()
   const contractMap = new Map()
@@ -27,11 +70,12 @@ export async function importFromExcel(file) {
     const fullName = String(row['FullName'] || '').trim()
     if (!personID && !fullName) continue
 
-    // Producer
+    // Producer — use Master Database contact info if available
     if (!producerMap.has(personID)) {
+      const contact = contactMap.get(personID) || {}
       const nameParts = fullName.split(' ')
-      const firstName = nameParts[0] || ''
-      const lastName = nameParts.slice(1).join(' ') || ''
+      const firstName = contact.firstName || nameParts[0] || ''
+      const lastName = contact.lastName || nameParts.slice(1).join(' ') || ''
 
       producerMap.set(personID, {
         personID,
@@ -40,6 +84,14 @@ export async function importFromExcel(file) {
         farmName: String(row['Farm Name'] || '').trim(),
         lifetimeCostshareTotal: parseFloat(row['LifetimeCostshareTotal']) || 0,
         lifetimeTotalAcres: parseFloat(row['Lifetime Total Acres']) || 0,
+        email: contact.email || '',
+        phone: contact.phone || '',
+        address: contact.address || '',
+        address2: contact.address2 || '',
+        city: contact.city || '',
+        state: contact.state || 'SD',
+        zip: contact.zip || '',
+        costShareUrl: String(row['CostShareURL'] || '').trim(),
       })
     }
 
@@ -81,11 +133,27 @@ export async function importFromExcel(file) {
     })
   }
 
+  let segmentContactCount = 0
+
   // Clear existing data
   await db.transaction('rw',
     db.projects, db.producers, db.contracts, db.bmps, db.practices,
     db.bills, db.funds, db.npsReductions, db.npsReductionsCombined, db.imports,
     async () => {
+      // Clear all existing data first
+      await Promise.all([
+        db.funds.clear(),
+        db.bills.clear(),
+        db.npsReductions.clear(),
+        db.npsReductionsCombined.clear(),
+        db.practices.clear(),
+        db.bmps.clear(),
+        db.contracts.clear(),
+        db.producers.clear(),
+        db.projects.clear(),
+        db.imports.clear(),
+      ])
+
       // Create project records for each unique segment
       const segments = new Set(bmpRows.map((r) => r.projectSegment).filter(Boolean))
       const projectIdMap = new Map()
@@ -124,13 +192,17 @@ export async function importFromExcel(file) {
           personID: pData.personID,
           lifetimeCostshareTotal: pData.lifetimeCostshareTotal,
           lifetimeTotalAcres: pData.lifetimeTotalAcres,
-          address: '',
-          city: '',
-          state: 'SD',
-          zip: '',
-          phone: '',
+          address: pData.address || '',
+          address2: pData.address2 || '',
+          city: pData.city || '',
+          state: pData.state || 'SD',
+          zip: pData.zip || '',
+          phone: pData.phone || '',
           altPhone: '',
-          email: '',
+          email: pData.email || '',
+          isImported: true,
+          costShareUrl: pData.costShareUrl || '',
+          importDate: new Date().toISOString(),
         })
         producerIdMap.set(personID, dbId)
       }
@@ -236,9 +308,68 @@ export async function importFromExcel(file) {
         }
       }
 
+      // Add Segment Contact-only people as producers
+      // (people with "Segment 1 Contact" or "Segment 2 Contact" but no "Cost-share Recipient")
+      for (const [pid, rels] of relationshipMap) {
+        // Skip if already created as a cost-share producer
+        if (producerIdMap.has(pid)) continue
+
+        const hasSegContact = [...rels].some((r) =>
+          r.toLowerCase().includes('segment') && r.toLowerCase().includes('contact')
+        )
+        const hasCostShare = [...rels].some((r) =>
+          r.toLowerCase().includes('cost-share recipient')
+        )
+        if (!hasSegContact || hasCostShare) continue
+
+        const contact = contactMap.get(pid)
+        if (!contact) continue
+
+        // Determine which segment(s) this person is a contact for
+        const isSeg1 = [...rels].some((r) => r.toLowerCase().includes('segment 1'))
+        const isSeg2 = [...rels].some((r) => r.toLowerCase().includes('segment 2'))
+        const segment = isSeg1 ? 1 : isSeg2 ? 2 : null
+
+        // Ensure project exists for this segment
+        if (segment && !projectIdMap.has(segment)) {
+          const projId = await db.projects.add({
+            name: `Soil Health Improvement and Planning Project Seg ${segment}`,
+            segment,
+            year: null,
+            sponsor: 'South Dakota Soil Health Coalition',
+          })
+          projectIdMap.set(segment, projId)
+        }
+
+        const projectId = projectIdMap.get(segment) || projectIdMap.get(null)
+
+        await db.producers.add({
+          projectId,
+          firstName: contact.firstName,
+          lastName: contact.lastName,
+          farmName: '',
+          personID: pid,
+          lifetimeCostshareTotal: 0,
+          lifetimeTotalAcres: 0,
+          address: contact.address || '',
+          address2: contact.address2 || '',
+          city: contact.city || '',
+          state: contact.state || 'SD',
+          zip: contact.zip || '',
+          phone: contact.phone || '',
+          altPhone: '',
+          email: contact.email || '',
+          isImported: true,
+          isSegmentContact: true,
+          recordUrl: contact.recordUrl || '',
+          importDate: new Date().toISOString(),
+        })
+        segmentContactCount++
+      }
+
       // Record the import
       await db.imports.add({
-        source: 'Excel (Cost-share History)',
+        source: 'Excel (Cost-share History + Master Database)',
         importDate: new Date().toISOString(),
         recordCount: rows.length,
       })
@@ -247,6 +378,7 @@ export async function importFromExcel(file) {
 
   return {
     producersImported: producerMap.size,
+    segmentContactsImported: segmentContactCount,
     contractsImported: contractMap.size,
     bmpsImported: bmpRows.length,
     totalRows: rows.length,

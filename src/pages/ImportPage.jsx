@@ -121,7 +121,10 @@ export default function ImportPage() {
           <strong>Import complete!</strong>
           {result.type === 'excel' ? (
             <ul>
-              <li>{result.producersImported} producers</li>
+              <li>{result.producersImported} cost-share producers</li>
+              {result.segmentContactsImported > 0 && (
+                <li>{result.segmentContactsImported} segment contacts (no cost-share)</li>
+              )}
               <li>{result.contractsImported} contracts</li>
               <li>{result.bmpsImported} BMPs</li>
               <li>{result.totalRows} total rows processed</li>

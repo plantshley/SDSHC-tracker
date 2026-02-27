@@ -30,6 +30,13 @@
   flex-wrap: wrap;
 }
 
+.producer-detail-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .producer-detail-farm {
   font-family: var(--font-heading);
   font-size: 26px;
@@ -37,11 +44,54 @@
   color: var(--accent);
 }
 
+.producer-detail-farm-link {
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+.producer-detail-farm-link:hover {
+  text-decoration: underline;
+  opacity: 0.85;
+}
+
 .producer-detail-name {
   font-family: var(--font-body);
   font-size: 14px;
   color: var(--text-secondary);
   margin-top: 4px;
+}
+
+/* Imported data tag */
+.imported-tag {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+  white-space: nowrap;
+}
+
+[data-mode="dark"] .imported-tag {
+  background: #3b2f1a;
+  color: #fcd34d;
+  border-color: #92400e;
+}
+
+.seg-contact-tag {
+  background: #dbeafe;
+  color: #1e40af;
+  border-color: #93c5fd;
+}
+
+[data-mode="dark"] .seg-contact-tag {
+  background: #1e2a4a;
+  color: #93c5fd;
+  border-color: #1e40af;
 }
 
 .producer-detail-stats {
@@ -70,6 +120,7 @@
   letter-spacing: 0.5px;
 }
 
+/* Contact info grid */
 .producer-info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -97,6 +148,51 @@
   color: var(--text-primary);
 }
 
+/* Editable fields */
+.editable-value {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 4px;
+  margin: -2px -4px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.editable-value:hover {
+  background: var(--accent-bg);
+}
+
+.edit-icon {
+  font-size: 11px;
+  color: var(--text-muted);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.editable-value:hover .edit-icon {
+  opacity: 1;
+}
+
+.editable-input-row {
+  display: flex;
+  gap: 4px;
+}
+
+.editable-input {
+  font-family: var(--font-body);
+  font-size: 13px;
+  padding: 4px 8px;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  outline: none;
+  width: 100%;
+}
+
+/* Section headings */
 .section-heading {
   font-family: var(--font-heading);
   font-size: 18px;
@@ -115,6 +211,11 @@
   letter-spacing: 0.5px;
 }
 
+.contract-section {
+  margin-top: 4px;
+}
+
+/* Contract meta */
 .contract-meta {
   display: flex;
   gap: 20px;
@@ -125,6 +226,81 @@
   margin-bottom: 8px;
 }
 
+/* Location info */
+.location-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.location-item {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-family: var(--font-body);
+  font-size: 12px;
+  padding: 6px 10px;
+  background: var(--bg-primary);
+  border-radius: 6px;
+}
+
+.location-coords {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.location-stream {
+  color: var(--accent);
+  font-size: 11px;
+}
+
+.location-bmp-type {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+/* NPS Reductions */
+.nps-grid {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.nps-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 20px;
+  background: var(--bg-primary);
+  border-radius: 10px;
+  min-width: 100px;
+}
+
+.nps-label {
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.nps-value {
+  font-family: var(--font-body);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 2px 0;
+}
+
+.nps-unit {
+  font-family: var(--font-body);
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* BMP items */
 .bmp-item {
   padding: 12px;
   background: var(--bg-primary);
@@ -135,7 +311,7 @@
 .bmp-item-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   flex-wrap: wrap;
 }
@@ -147,10 +323,27 @@
   color: var(--accent-dark);
 }
 
+.bmp-meta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 .bmp-date {
   font-family: var(--font-body);
   font-size: 11px;
   color: var(--text-muted);
+}
+
+.bmp-coords {
+  font-family: var(--font-body);
+  font-size: 10px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  padding: 1px 6px;
+  background: var(--bg-card);
+  border-radius: 4px;
 }
 
 .bmp-practices {
@@ -183,9 +376,123 @@
   text-align: right;
 }
 
-.practice-status {
-  color: var(--text-muted);
+.practice-nps {
+  color: var(--text-secondary);
   font-size: 11px;
+  flex: 1;
+}
+
+.practice-amount {
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 12px;
   min-width: 70px;
   text-align: right;
+}
+
+/* Files & Documents */
+.file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--bg-primary);
+  border-radius: 8px;
+}
+
+.file-thumbnail {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.file-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.file-name {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text-primary);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-date {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.file-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.file-action-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.15s;
+}
+
+.file-action-btn:hover {
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
+.file-delete-btn:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+[data-mode="dark"] .file-delete-btn:hover {
+  background: #3b1a1a;
+  color: #f87171;
+}
+
+.file-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-bg);
+  border: 1px dashed var(--accent);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  width: 100%;
+}
+
+.file-upload-btn:hover {
+  background: var(--accent);
+  color: white;
 }

@@ -7,26 +7,20 @@ export default function ProducerListPage() {
   const [producers, setProducers] = useState([])
   const [contracts, setContracts] = useState([])
   const [projects, setProjects] = useState([])
-  const [funds, setFunds] = useState([])
-  const [bills, setBills] = useState([])
   const [search, setSearch] = useState('')
   const [segmentFilter, setSegmentFilter] = useState('all')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function load() {
-      const [p, c, proj, f, b] = await Promise.all([
+      const [p, c, proj] = await Promise.all([
         db.producers.toArray(),
         db.contracts.toArray(),
         db.projects.toArray(),
-        db.funds.toArray(),
-        db.bills.toArray(),
       ])
       setProducers(p)
       setContracts(c)
       setProjects(proj)
-      setFunds(f)
-      setBills(b)
       setLoading(false)
     }
     load()
@@ -45,22 +39,14 @@ export default function ProducerListPage() {
         .map((proj) => proj.segment)
         .filter(Boolean)
 
-      // Calculate total funding
-      const producerBills = bills.filter((b) => {
-        // This is simplified — ideally would walk the full chain
-        return true
-      })
-      const producerFunds = funds.filter((f) => producerBills.some((b) => b.id === f.billId))
-      const totalFunding = producerFunds.reduce((sum, f) => sum + (f.amount || 0), 0)
-
       return {
         ...p,
         contractNumbers,
         segments: [...new Set(segments)],
-        totalFunding: p.lifetimeCostshareTotal || totalFunding,
+        totalFunding: p.lifetimeCostshareTotal || 0,
       }
     })
-  }, [producers, contracts, projects, funds, bills])
+  }, [producers, contracts, projects])
 
   const filtered = useMemo(() => {
     let result = enrichedProducers

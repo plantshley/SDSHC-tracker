@@ -18,6 +18,7 @@ db.version(1).stores({
   voucherItems: '++id, voucherId, billId, fundId',
   grtsReports: '++id, projectId, fiscalYear, reportingPeriod, status',
   imports: '++id, source, importDate, recordCount',
+  producerFiles: '++id, producerId, fileName, fileType, uploadDate',
 })
 
 export default db

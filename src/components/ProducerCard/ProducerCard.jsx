@@ -9,7 +9,11 @@ export default function ProducerCard({ producer }) {
       className="producer-card"
       onClick={() => navigate(`/producers/${producer.id}`)}
     >
-      <div className="producer-card-farm">{producer.farmName || 'No Farm Name'}</div>
+      <div className="producer-card-top-row">
+        <div className="producer-card-farm">{producer.farmName || 'No Farm Name'}</div>
+        {producer.isSegmentContact && <span className="producer-card-seg-contact">Segment Contact</span>}
+        {producer.isImported && !producer.isSegmentContact && <span className="producer-card-imported">Imported</span>}
+      </div>
       <div className="producer-card-name">
         {producer.firstName} {producer.lastName}
       </div>
